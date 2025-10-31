@@ -1,0 +1,85 @@
+@font-face {
+  font-family: "SBL Greek";
+  src: local("SBL Greek"), url("fonts/SBL_grk.ttf") format("truetype");
+  font-weight: normal;
+}
+
+.font-face-sblgk {
+  font-family: "SBL Greek";
+}
+.AppBase {
+        display:grid;
+        color: gray;
+        height: 100vh;
+        grid-template-columns: 40px auto 40px;
+        grid-template-rows: 100px auto;
+        grid-template-areas:
+                "pad1 header pad2"
+                "pad1 main pad2";
+        }
+
+.Pad1 {
+        grid-area: pad1;
+        background-color: lightseagreen;
+}
+
+.Pad2 {
+        grid-area: pad2;
+        background-color: lightseagreen;
+}
+
+.HeaderBase {
+        background-color: lightseagreen;
+        display: grid;
+        grid-template-areas: "controls logo";
+        grid-template-columns: 60% 40%;
+}
+
+.Controls {
+        grid-area: controls;
+        display: flex;
+        flex-direction: row;
+        column-gap: 40px;
+        align-items: flex-start;
+        padding-top: 20px;
+}
+
+.Logo {
+        grid-area: logo;
+        text-align: right;
+        font-size: 40px;
+        font-family: "SBL Greek";
+        color: darkblue;
+}
+
+.SettingsBase {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto;
+        grid-template-areas: "pad1 pad1 pad1"
+                             "pad2 settings pad3"
+                             "pad2 errorMessage pad3"
+                             "pad2 controls pad3";
+        padding: 1em;
+        grid-area: main;
+}
+
+.SettingsGridBase {
+        grid-area: settings;
+        display: flex;
+        flex-direction: row;
+}
+
+.ErrorMessage {
+        color: res;
+        grid-area: errorMessage;
+}
+
+.SettingsLabel {
+        font-weight: bold;
+        text-align: center;
+}
+
+.ControlGrid {
+        grid-area: controls;
+}

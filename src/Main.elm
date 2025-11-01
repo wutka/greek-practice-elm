@@ -37,7 +37,7 @@ update msg model =
         ({model | currentParsing = Dict.insert category value model.currentParsing}, Cmd.none)
     GotoSettings -> ({ model | currentPage = SettingsPage }, Cmd.none)
     GotoAbout -> ({ model | currentPage = AboutPage }, Cmd.none)
-    RunQuiz -> startQuiz { model | currentPage = QuizPage}
+    RunQuiz -> startQuiz model
     PickNewVerb -> pickNewVerb model
     NewVerb verbNum -> ({model | currentVerb = Array.get verbNum model.allowableVerbs}, Cmd.none)
     DoCheck -> ({model | checkedParsing = Just model.currentParsing}, Cmd.none)

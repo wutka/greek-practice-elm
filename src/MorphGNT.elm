@@ -37,6 +37,7 @@ parsingDecoder = Dict.fromList [
       , ("Number", Dict.fromList [("S", "Singular"), ("P", "Plural")])
       , ("Gender", Dict.fromList [("M", "Masculine"), ("F", "Feminine"), ("N", "Neuter")])
       ] 
+
 parsePartOfSpeech : String -> PartOfSpeechType
 parsePartOfSpeech str =
         if str == "A-" then Adjective
@@ -54,6 +55,7 @@ parsePartOfSpeech str =
         else if str == "X-" then Particle
         else Particle
 
+verbParsingOffsets : List (String, Int)
 verbParsingOffsets = [
         ("Person", 0), ("Tense", 1), ("Voice", 2), ("Mood", 3)
       , ("Case", 4), ("Number", 5), ("Gender", 6) ]

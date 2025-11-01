@@ -11,15 +11,19 @@ import Html.Events exposing (onCheck, onClick)
 
 import MorphGNT exposing (GNTWordType, ParsingType)
 import SBLGNT exposing (allVerbs, gntText)
-import Model exposing (Model, ParseSettingsType, ActionType,books,
+import Model exposing (Model, ParseSettingsType, ActionType, books,
     settingTable, settingCategories)
 
+defaultDisabled : Set.Set String
 defaultDisabled = Set.fromList ["Gender", "Case"]
+
+disabledCategories : Dict.Dict String (Set.Set String)
 disabledCategories = Dict.fromList [
     ("Participle", Set.fromList ["Person"])
   , ("Infinitive", Set.fromList ["Person", "Number", "Gender", "Case"])
   ]
 
+pickNewVerb : Model.Model -> (Model.Model, Cmd ActionType)
 pickNewVerb model =
       if Array.length model.allowableVerbs == 0 then
         ({model | currentVerb=Nothing}, Cmd.none)
@@ -27,14 +31,16 @@ pickNewVerb model =
         ({model | currentParsing = Dict.empty, checkedParsing = Nothing},
          Random.generate Model.NewVerb (Random.int 0 ((Array.length model.allowableVerbs) - 1)))
 
+startQuiz : Model.Model -> (Model, Cmd ActionType)
 startQuiz model =
   let allowableVerbs = Array.fromList (List.filter (filterVerbs model.parseSettings) allVerbs) in
   if (Array.length allowableVerbs) == 0 then
-    ({model | currentPage=Model.SettingsPage, 
-      errorMessage = Just "No verses match the parsing criteria"}, Cmd.none)
+    ({model | errorMessage = Just "No verses match the parsing criteria"}, Cmd.none)
   else
-    pickNewVerb {model | errorMessage = Nothing, allowableVerbs = allowableVerbs}
+    pickNewVerb {model | errorMessage = Nothing, currentPage=Model.QuizPage,
+      allowableVerbs = allowableVerbs}
 
+compareParsing : ParseSettingsType -> (String, String) -> Bool
 compareParsing parseSettings (category, verbValue) =
   case Dict.get category parseSettings of
     Nothing -> False  -- Verb has a category that isn't in the parse settings
@@ -44,11 +50,13 @@ filterVerbs : ParseSettingsType -> GNTWordType -> Bool
 filterVerbs parseSettings verb =
   List.all (compareParsing parseSettings) (Dict.toList verb.verbParsing)
 
+getWithDefault : Int -> Array.Array a -> a -> a
 getWithDefault index arr default =
   case Array.get index arr of
       Nothing -> default
       Just item -> item
 
+getVerse : GNTWordType -> Array.Array GNTWordType
 getVerse word =
       case ((Array.get (word.book-1) gntText) |>
             Maybe.andThen (Array.get (word.chapter-1)) |>
@@ -57,12 +65,14 @@ getVerse word =
             Just arr -> arr
                 
 
+bookChapterVerse : Model.Model -> String
 bookChapterVerse model =
   case model.currentVerb of
       Nothing -> "No verses match the parsing criteria"
       Just verb -> (getWithDefault (verb.book-1) books "Unknown") ++ " " ++ 
         (String.fromInt verb.chapter) ++ ":" ++ (String.fromInt verb.verse)
 
+displayVerse : Model.Model -> List (Html ActionType)
 displayVerse model =
   case model.currentVerb of
     Nothing -> [ text "" ]
@@ -134,6 +144,7 @@ parsingGroup model category =
               (div [class "ParsingLabel"] [text category]
                 :: (List.map (parsingOption model category) settingNames))
 
+displayLemma : Model.Model -> Html ActionType
 displayLemma model =
   case model.checkedParsing of
     Nothing -> text ""
@@ -141,6 +152,7 @@ displayLemma model =
                 Nothing -> text ""
                 Just word -> text ("Verb: " ++ word.lemma))
 
+quizPageView : Model.Model -> Html ActionType
 quizPageView model =
   div [class "QuizBase"] [
       div [class "BookChapterVerse"] [text (bookChapterVerse model)]

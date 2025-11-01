@@ -188,7 +188,11 @@ filterVerbs parseSettings verb =
 
 startQuiz model =
   let allowableVerbs = Array.fromList (List.filter (filterVerbs model.parseSettings) allVerbs) in
-  pickNewVerb {model | allowableVerbs = allowableVerbs}
+  if (Array.length allowableVerbs) == 0 then
+    ({model | currentPage=SettingsPage, 
+      errorMessage = Just "No verses match the parsing criteria"}, Cmd.none)
+  else
+    pickNewVerb {model | errorMessage = Nothing, allowableVerbs = allowableVerbs}
 
 getWithDefault index arr default =
   case Array.get index arr of

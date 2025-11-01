@@ -72,8 +72,9 @@
 }
 
 .ErrorMessage {
-        color: res;
+        color: red;
         grid-area: errorMessage;
+        font-size: 32px;
 }
 
 .SettingsLabel {

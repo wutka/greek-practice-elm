@@ -4,8 +4,8 @@ import Array
 import Browser
 import Dict
 import Set
-import Html exposing (Html, div, text, button, label, input, Attribute)
-import Html.Attributes exposing (class, type_, checked, disabled, style)
+import Html exposing (Html, div, text, button, label, input, p, a, Attribute)
+import Html.Attributes exposing (class, type_, checked, disabled, style, href)
 import Html.Events exposing (onCheck, onClick)
 import Random
 import Debug
@@ -35,7 +35,8 @@ type alias Model = {
       }
 
 type ActionType = AddSetting String String | RemoveSetting String String | RunQuiz |
-  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String Bool | DoCheck
+  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String Bool | DoCheck |
+  GotoAbout
 
 settingTable : Dict.Dict String (List String)
 settingTable = Dict.fromList [
@@ -61,7 +62,7 @@ settingCategories = [ "Voice", "Tense", "Mood", "Person", "Number", "Case", "Gen
 
 defaultDisabled = Set.fromList ["Gender", "Case"]
 disabledCategories = Dict.fromList [
-    ("Participle", Set.fromList ["Person", "Number"])
+    ("Participle", Set.fromList ["Person"])
   , ("Infinitive", Set.fromList ["Person", "Number", "Gender", "Case"])
   ]
 
@@ -102,6 +103,7 @@ update msg model =
     ChangeParsing category value checked ->
         ({model | currentParsing = Dict.insert category value model.currentParsing}, Cmd.none)
     GotoSettings -> ({ model | currentPage = SettingsPage }, Cmd.none)
+    GotoAbout -> ({ model | currentPage = AboutPage }, Cmd.none)
     RunQuiz -> startQuiz { model | currentPage = QuizPage}
     PickNewVerb -> pickNewVerb model
     NewVerb verbNum -> ({model | currentVerb = Array.get verbNum model.allowableVerbs}, Cmd.none)
@@ -120,7 +122,7 @@ header = div [class "HeaderBase"]
           [
               button [class "btn btn-primary", type_ "submit", onClick GotoSettings] [text "Settings"]
             , button [class "btn btn-primary", type_ "submit", onClick RunQuiz] [text "Quiz"]
-            , button [class "btn btn-primary", type_ "submit"] [text "About"]
+            , button [class "btn btn-primary", type_ "submit", onClick GotoAbout] [text "About"]
           ]
       , div [class "Logo"] [text "NT Greek Verb Practice"]
     ]
@@ -131,7 +133,7 @@ view model =
       , div [class "Pad1"] []
       , case model.currentPage of
           SettingsPage -> settingsPageView model
-          AboutPage -> div [] []
+          AboutPage -> aboutPageView
           QuizPage -> quizPageView model
       , div [class "Pad2"] []
     ]
@@ -282,7 +284,7 @@ displayLemma model =
     Nothing -> text ""
     Just _ -> (case model.currentVerb of
                 Nothing -> text ""
-                Just word -> text word.lemma)
+                Just word -> text ("Verb: " ++ word.lemma))
 
 quizPageView model =
   div [class "QuizBase"] [
@@ -295,3 +297,32 @@ quizPageView model =
       , button [class "btn btn-primary", onClick PickNewVerb] [text "Next"]
       ]
     ]
+
+aboutPageView =
+  div [] [
+    p [] [text """
+     This program allows you to practice parsing Greek New Testament verbs in-context, that
+     is, within a verse, rather than just giving you a verb without the verse in which
+     it occurs.
+    """]
+  , p [] [text """
+     The Greek NT text used here is the SBL GNT from the Society for Biblical Literature,
+     and the parsing data is from the MorphGNT project's parsing of the SBL GNT
+     (available here """
+     , a [href "https://github.com/morphgnt/sblgnt"] [text "https://github.com/morphgnt/sblgnt"]
+     , text "). The Greek font used here is the "
+     , a [href "https://www.sbl-site.org/educational/BiblicalFonts_SBLGreek.aspx"] [text "SBL Greek font"]
+     , text "."]
+  , p [] [text """
+      On the settings page, you can select the various options you want to be quizzed on,
+      with the default being everything. Use the Check button to see if your guesses
+      for the parsing are correct, and the Next button to choose another random
+      word.
+      """]
+  , p [] [ text "The source code for this Elm web app is available at "
+           , a [href "https://github.com/wutka/greek-practice-elm"] [text "https://github.com/wutka/greek-practice-elm"]
+           , text ". You can e-mail the author at "
+           , a [href "mailto:mark@wutka.com"] [text "mark@wutka.com"]
+           , text "."
+           ]
+  ]

@@ -5,7 +5,7 @@ import Dict
 import Set
 import Random
 
-import Html exposing (Html, div, input, label, button, text, Attribute)
+import Html exposing (Html, div, input, label, button, text)
 import Html.Attributes exposing (class, type_, checked, style, disabled)
 import Html.Events exposing (onCheck, onClick)
 
@@ -73,8 +73,9 @@ displayVerse model =
       else
         div [class "VerseWord"] [text w.text]) (Array.toIndexedList (getVerse word))
 
-parsingCheckChange category settingName checked =
-  Model.ChangeParsing category settingName checked
+parsingCheckChange : String -> String -> Bool -> ActionType
+parsingCheckChange category settingName _ =
+  Model.ChangeParsing category settingName
 
 isParsingChecked : ParsingType -> String -> String -> Bool
 isParsingChecked currentParsing category settingName =
@@ -128,7 +129,7 @@ parsingGroup model category =
       Just settingNames ->
         case model.currentVerb of
           Nothing -> div [] []
-          Just word ->
+          Just _ ->
             div [class "form-check"] 
               (div [class "ParsingLabel"] [text category]
                 :: (List.map (parsingOption model category) settingNames))

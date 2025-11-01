@@ -4,7 +4,6 @@ import Array
 import Dict
 import Set
 import MorphGNT exposing (GNTWordType, ParsingType)
-import SBLGNT exposing (allVerbs)
 
 type alias ParseSettingsType = Dict.Dict String (Set.Set String)
 
@@ -28,7 +27,7 @@ type alias Model = {
       }
 
 type ActionType = AddSetting String String | RemoveSetting String String | RunQuiz |
-  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String Bool | DoCheck |
+  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String | DoCheck |
   GotoAbout
 
 settingTable : Dict.Dict String (List String)
@@ -54,7 +53,7 @@ books = Array.fromList
 settingCategories = [ "Voice", "Tense", "Mood", "Person", "Number", "Case", "Gender" ]
 
 initialParseSettings : ParseSettingsType
-initialParseSettings = Dict.map (\k a -> Set.fromList a) settingTable
+initialParseSettings = Dict.map (\_ a -> Set.fromList a) settingTable
 
 initialModel : Model
 initialModel = {

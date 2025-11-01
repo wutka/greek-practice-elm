@@ -4,9 +4,9 @@ import Array
 import Browser
 import Dict
 import Set
-import Html exposing (div, text, button, label, input, p, a, Attribute)
-import Html.Attributes exposing (class, type_, checked, disabled, style, href)
-import Html.Events exposing (onCheck, onClick)
+import Html exposing (div, text, button)
+import Html.Attributes exposing (class, type_)
+import Html.Events exposing (onClick)
 
 import MorphGNT exposing (..)
 import SBLGNT exposing (..)
@@ -33,7 +33,7 @@ update msg model =
       case Dict.get category model.parseSettings of
         Nothing -> (model, Cmd.none)
         Just settings -> ({ model | parseSettings = Dict.insert category (Set.remove value settings) model.parseSettings}, Cmd.none)
-    ChangeParsing category value checked ->
+    ChangeParsing category value ->
         ({model | currentParsing = Dict.insert category value model.currentParsing}, Cmd.none)
     GotoSettings -> ({ model | currentPage = SettingsPage }, Cmd.none)
     GotoAbout -> ({ model | currentPage = AboutPage }, Cmd.none)

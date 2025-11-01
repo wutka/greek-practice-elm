@@ -3,8 +3,7 @@ module Settings exposing (..)
 import Dict
 import Set
 
-import Browser
-import Html exposing (Html, div, input, label, button, text, Attribute)
+import Html exposing (Html, div, input, label, button, text)
 import Html.Attributes exposing (class, type_, checked)
 import Html.Events exposing (onCheck, onClick)
 

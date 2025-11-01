@@ -2,8 +2,6 @@ module MorphGNT exposing (..)
 
 import Dict
 import List
-import Set
-import Bitwise exposing (or)
 
 type PartOfSpeechType = Adjective | Conjunction | Adverb |
         Interjection | Noun | Preposition | DefiniteArticle |

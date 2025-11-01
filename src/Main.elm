@@ -35,7 +35,7 @@ type alias Model = {
       }
 
 type ActionType = AddSetting String String | RemoveSetting String String | RunQuiz |
-  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String Bool
+  GotoSettings | PickNewVerb | NewVerb Int | ChangeParsing String String Bool | DoCheck
 
 settingTable : Dict.Dict String (List String)
 settingTable = Dict.fromList [
@@ -55,6 +55,14 @@ books = Array.fromList
   , "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians"
   , "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James"
   , "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"
+  ]
+
+settingCategories = [ "Voice", "Tense", "Mood", "Person", "Number", "Case", "Gender" ]
+
+defaultDisabled = Set.fromList ["Gender", "Case"]
+disabledCategories = Dict.fromList [
+    ("Participle", Set.fromList ["Person", "Number"])
+  , ("Infinitive", Set.fromList ["Person", "Number", "Gender", "Case"])
   ]
 
 initialParseSettings : ParseSettingsType
@@ -97,6 +105,7 @@ update msg model =
     RunQuiz -> startQuiz { model | currentPage = QuizPage}
     PickNewVerb -> pickNewVerb model
     NewVerb verbNum -> ({model | currentVerb = Array.get verbNum model.allowableVerbs}, Cmd.none)
+    DoCheck -> ({model | checkedParsing = Just model.currentParsing}, Cmd.none)
 
 pickNewVerb model =
       if Array.length model.allowableVerbs == 0 then
@@ -157,7 +166,7 @@ settingGroup settings category =
 
 settingsPageView model =
   div [class "SettingsBase"] [
-    div [class "SettingsGridBase"] (List.map (settingGroup model.parseSettings) (Dict.keys settingTable))
+    div [class "SettingsGridBase"] (List.map (settingGroup model.parseSettings) settingCategories)
   , case model.errorMessage of
     Nothing -> text ""
     Just message -> div [class "ErrorMessage"] [text message]
@@ -218,17 +227,25 @@ isParsingChecked currentParsing category settingName =
     Just value -> value == settingName
 
 isParsingDisabled : ParsingType -> String -> Bool
-isParsingDisabled currentParsing category = False
-
-getCheckedColor : ParsingType -> Maybe GNTWordType -> String -> Attribute msg
-getCheckedColor parsing mverb category =
+isParsingDisabled currentParsing category =
+  case Dict.get "Mood" currentParsing of
+    Nothing -> False
+    Just mood -> Set.member category
+        (case Dict.get mood disabledCategories of
+          Nothing -> defaultDisabled
+          Just disabled -> disabled)
+      
+getCheckedLabel : ParsingType -> Maybe GNTWordType -> String -> String -> Html ActionType
+getCheckedLabel parsing mverb category settingName =
   case mverb of
-    Nothing -> style "color" "#000080"
+    Nothing -> label [class "form-check-label"] [text settingName]
     Just verb ->
-      if Dict.get category parsing == Dict.get category verb.verbParsing then
-        style "color" "#008000"
+      if Dict.get category parsing == Just settingName then
+        label [class "form-check-label", style "color" "#008000"] [text settingName]
+      else if Dict.get category verb.verbParsing == Just settingName then
+        label [class "form-check-label", style "color" "#ff2020"] [text settingName]
       else
-        style "color" "#ff2020"
+        label [class "form-check-label"] [text settingName]
 
 parsingOption : Model -> String -> String -> Html ActionType
 parsingOption model category settingName =
@@ -242,10 +259,10 @@ parsingOption model category settingName =
       ]
     Just parsing ->
       div [] [
-        input [class "form-check-input", type_ "checkbox", (getCheckedColor parsing model.currentVerb category)
+        input [class "form-check-input", type_ "checkbox"
               , checked (isParsingChecked model.currentParsing category settingName)
               , disabled (isParsingDisabled model.currentParsing category)] []
-        , label [class "form-check-label"] [text settingName]
+        , getCheckedLabel parsing model.currentVerb category settingName
       ]
 
 parsingGroup : Model -> String -> Html ActionType
@@ -260,9 +277,21 @@ parsingGroup model category =
               (div [class "ParsingLabel"] [text category]
                 :: (List.map (parsingOption model category) settingNames))
 
+displayLemma model =
+  case model.checkedParsing of
+    Nothing -> text ""
+    Just _ -> (case model.currentVerb of
+                Nothing -> text ""
+                Just word -> text word.lemma)
+
 quizPageView model =
   div [class "QuizBase"] [
       div [class "BookChapterVerse"] [text (bookChapterVerse model)]
     , div [class "VerseBase"] [div [class "VerseDiv"] (displayVerse model)]
-    , div [class "ParsingGridBase"] (List.map (parsingGroup model) (Dict.keys settingTable))
+    , div [class "ParsingGridBase"] (List.map (parsingGroup model) settingCategories)
+    , div [class "LemmaDiv"] [div [class "LemmaWord"] [displayLemma model]]
+    , div [class "QuizControls"] [
+        button [class "btn btn-primary", onClick DoCheck] [text "Check"]
+      , button [class "btn btn-primary", onClick PickNewVerb] [text "Next"]
+      ]
     ]

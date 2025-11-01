@@ -68,6 +68,7 @@
         grid-area: settings;
         display: flex;
         flex-direction: row;
+        gap: 20px;
 }
 
 .ErrorMessage {

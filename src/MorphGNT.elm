@@ -15,6 +15,7 @@ type alias GNTWordType = {
         book : Int
       , chapter : Int
       , verse : Int
+      , versePos : Int
       , partOfSpeech : PartOfSpeechType 
       , verbParsing : ParsingType
       , text : String
@@ -75,7 +76,7 @@ parseParsing verbParsing (category, offset) parsingDict =
     
 parseGNTWord : Int -> Int -> Int -> String -> String -> String -> String -> String -> String -> GNTWordType
 parseGNTWord book chapter verse partOfSpeech verbParsing text word normalizedWord lemma =
-        { book=book, chapter=chapter, verse=verse,
+        { book=book, chapter=chapter, verse=verse, versePos=-1,
           partOfSpeech = parsePartOfSpeech partOfSpeech,
           verbParsing = List.foldl (parseParsing verbParsing) Dict.empty verbParsingOffsets,
           text=text, word=word, normalizedWord=normalizedWord,

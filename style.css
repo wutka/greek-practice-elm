@@ -83,3 +83,84 @@
 .ControlGrid {
         grid-area: controls;
 }
+
+.QuizBase {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    grid-template-areas: "pad1 book_chapter_verse pad2"
+                         "pad1 verse pad2"
+                         "pad1 answers pad2"
+                         "pad1 lemma pad2"
+                         "pad1 controls pad2";
+    row-gap: 20px;
+    padding: 1em;
+}
+
+.BookChapterVerse {
+    grid-area: book_chapter_verse;
+    font-size: xx-large;
+    color: black;
+}
+
+.VerseBase {
+    grid-area: verse;
+    width: 800px;
+}
+
+.VerseWord {
+    font-size: xx-large;
+}
+
+.HighlightedVerseWord {
+    font-size: xx-large;
+    color: darkgreen;
+}
+
+.ParsingGridBase {
+    display:flex;
+    flex-direction: row;
+    grid-area: answers;
+    gap: 20px;
+}
+
+.ParsingGroupBase {
+    display: flex;
+    flex-direction: column;
+}
+
+.QuizControls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    grid-area: controls;
+    column-gap: 100px;
+}
+
+.VerseDiv {
+    font-family: "SBL Greek";
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.LemmaWord {
+    font-size: xx-large;
+    color: black;
+}
+
+.LemmaDiv {
+    font-family: "SBL Greek";
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    grid-area: lemma;
+    gap: 10px;
+}
+
+.ParsingLabel {
+    font-weight: bold;
+    text-align: center;
+}

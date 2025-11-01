@@ -5,14 +5,7 @@ gnt = json.load(file)
 file.close()
 
 comma=[" ",","]
-outfile = open("src/SBLGNT.elm", "w")
-print("module SBLGNT exposing (..)", file=outfile)
-print(file=outfile)
-print("import Array exposing (..)", file=outfile)
-print("import MorphGNT exposing (..)", file=outfile)
-print(file=outfile)
-print("type alias GNTType = Array (Array (Array (Array GNTWordType)))", file=outfile)
-print(file=outfile)
+outfile = open("gnttext", "w")
 print("gntText : GNTType", file=outfile)
 print("gntText = fromList [", file=outfile)
 firstBook = 0
@@ -25,7 +18,7 @@ for book in gnt:
         firstChapter = 1
         firstVerse = 0
         for verse in chapter:
-            print("        {} fromList [".format(comma[firstVerse]), file=outfile)
+            print("        {} addVersePos [".format(comma[firstVerse]), file=outfile)
             firstVerse = 1
             firstWord = 0
             for word in verse:

@@ -107,9 +107,9 @@ getCheckedLabel parsing mverb category settingName =
   case mverb of
     Nothing -> label [class "form-check-label"] [text settingName]
     Just verb ->
-      if Dict.get category parsing == Just settingName then
+      if Dict.get category verb.verbParsing == Just settingName then
         label [class "form-check-label", style "color" "#008000"] [text settingName]
-      else if Dict.get category verb.verbParsing == Just settingName then
+      else if Dict.get category parsing == Just settingName then
         label [class "form-check-label", style "color" "#ff2020"] [text settingName]
       else
         label [class "form-check-label"] [text settingName]
